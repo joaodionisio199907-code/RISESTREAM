@@ -13,27 +13,23 @@
         :root { --p-color: #8b5cf6; --s-color: #d946ef; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030303; color: white; overflow: hidden; }
         
-        /* Layout & Sidebar */
         .sidebar { background: #080808; width: 280px; transition: all 0.3s ease; border-right: 1px solid rgba(255,255,255,0.05); }
         .gradient-text { background: linear-gradient(135deg, var(--p-color), var(--s-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* Views Navigation */
         .view-section { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
         .view-section.active { display: block; opacity: 1; transform: translateY(0); }
         
-        /* Game Cards */
         .game-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; border-radius: 20px; aspect-ratio: 3/4; }
         .game-card:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3); }
         .game-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
 
-        /* Auth Modal */
         .auth-modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
         .auth-modal.active { display: flex; align-items: center; justify-content: center; }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
-        @media (max-width: 768px) { .sidebar { display: none; } .mobile-nav { display: flex; } }
+        @media (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
 <body class="flex h-screen w-full">
@@ -84,8 +80,8 @@
                 </div>
             </div>
             <div class="flex items-center space-x-4 ml-6">
-                <button onclick="showView('profile')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black hover:bg-purple-500 hover:text-white transition">GO LIVE</button>
-                <div id="nav-user-avatar" class="w-10 h-10 rounded-xl bg-white/10 overflow-hidden cursor-pointer" onclick="showView('profile')">
+                <button onclick="showView('profile')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black hover:bg-purple-500 hover:text-white transition uppercase">Go Live</button>
+                <div class="w-10 h-10 rounded-xl bg-white/10 overflow-hidden cursor-pointer" onclick="showView('profile')">
                     <img src="https://i.pravatar.cc/100?u=guest" id="header-avatar" class="w-full h-full object-cover">
                 </div>
             </div>
@@ -94,12 +90,12 @@
         <div id="scroll-container" class="flex-grow overflow-y-auto p-4 md:p-10">
             
             <section id="home" class="view-section active">
-                <div class="relative w-full aspect-[21/9] rounded-[40px] overflow-hidden border border-white/10 mb-12 group cursor-pointer" onclick="openStream('IbaiLlanos', 'KINGS LEAGUE FINALS', 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000', 'https://i.pravatar.cc/150?u=ibai')">
+                <div class="relative w-full aspect-[21/9] rounded-[40px] overflow-hidden border border-white/10 mb-12 group cursor-pointer" onclick="openStream('IbaiLlanos', 'KINGS LEAGUE FINALS', '...', 'https://i.pravatar.cc/150?u=ibai', '67b78995-5e6f-45b9-9150-1011c3a64731')">
                     <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
                     <div class="absolute bottom-10 left-10">
                         <span class="bg-red-600 px-3 py-1 rounded text-[10px] font-black uppercase mb-2 inline-block">LIVE</span>
-                        <h2 class="text-4xl font-black italic tracking-tighter">KINGS LEAGUE FINALS</h2>
+                        <h2 class="text-4xl font-black italic tracking-tighter uppercase">Kings League Finals</h2>
                     </div>
                 </div>
 
@@ -121,7 +117,7 @@
                 <div class="grid lg:grid-cols-4 gap-8">
                     <div class="lg:col-span-3">
                         <div class="aspect-video bg-black rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative">
-                            <iframe id="peertube-player" class="w-full h-full" src="" frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
+                            <iframe id="peertube-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
                         </div>
                         <div class="mt-6 flex justify-between items-center bg-white/5 p-6 rounded-[32px]">
                             <div class="flex space-x-4">
@@ -134,10 +130,12 @@
                             <button class="bg-white text-black px-6 py-2 rounded-xl font-black text-xs">SEGUIR</button>
                         </div>
                     </div>
-                    <div class="lg:col-span-1 glass rounded-[32px] h-[600px] flex flex-col">
-                        <div class="p-4 border-b border-white/10 text-[10px] font-black uppercase text-gray-500">Live Chat</div>
-                        <div id="pro-chat" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs"></div>
-                        <div class="p-4"><input type="text" id="chat-input" onkeypress="handleChat(event)" placeholder="Escribe..." class="w-full bg-white/5 rounded-xl py-2 px-4 focus:outline-none border border-white/10"></div>
+                    <div class="lg:col-span-1 glass rounded-[32px] h-[600px] flex flex-col overflow-hidden">
+                        <div class="p-4 border-b border-white/10 text-[10px] font-black uppercase text-gray-500 tracking-widest">Live Chat</div>
+                        <div id="pro-chat" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs scroll-smooth"></div>
+                        <div class="p-4 bg-black/20">
+                            <input type="text" id="chat-input" onkeypress="handleChat(event)" placeholder="Enviar mensaje..." class="w-full bg-white/5 rounded-xl py-3 px-4 focus:outline-none border border-white/10 text-xs">
+                        </div>
                     </div>
                 </div>
             </section>
@@ -146,46 +144,64 @@
                 <div class="max-w-2xl mx-auto">
                     <div id="user-logged-out" class="glass p-12 rounded-[50px] text-center">
                         <i class="fa-solid fa-user-shield text-5xl mb-6 text-purple-500"></i>
-                        <h2 class="text-2xl font-black mb-6">Gestiona tu canal Rise</h2>
-                        <button onclick="openAuth()" class="bg-purple-600 px-8 py-3 rounded-2xl font-black text-xs">LOGIN / REGISTRO</button>
+                        <h2 class="text-2xl font-black mb-6 italic">Gestiona tu canal Rise</h2>
+                        <button onclick="openAuth()" class="bg-purple-600 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest">Login / Registro</button>
                     </div>
                     
                     <div id="user-logged-in" class="hidden glass p-10 rounded-[50px]">
-                        <div id="profile-header" class="text-center mb-8"></div>
-                        <div class="space-y-6">
-                            <div>
-                                <label class="text-[10px] font-black text-gray-500 uppercase">Clave de Stream (OBS)</label>
-                                <div class="bg-black/40 p-4 rounded-xl border border-white/10 flex justify-between items-center mt-2">
-                                    <code id="user-stream-key" class="text-purple-400 font-mono text-xs"></code>
-                                    <i class="fa-solid fa-copy cursor-pointer text-gray-500" onclick="copyKey()"></i>
+                        <div id="profile-header" class="text-center mb-10"></div>
+                        
+                        <div class="space-y-8">
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
+                                <h3 class="text-purple-500 font-black italic mb-4 uppercase text-xs tracking-widest">Configuración de OBS</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="text-[10px] font-black text-gray-500 uppercase">Servidor RTMP</label>
+                                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 mt-2 flex justify-between">
+                                            <code class="text-xs font-mono text-gray-300">rtmp://peertube2.cpy.re/live</code>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-black text-gray-500 uppercase">Tu Clave de Stream</label>
+                                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 mt-2 flex justify-between items-center">
+                                            <code id="user-stream-key" class="text-purple-400 font-mono text-xs">********</code>
+                                            <i class="fa-solid fa-copy cursor-pointer text-gray-500 hover:text-white" onclick="copyKey()"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <label class="text-[10px] font-black text-gray-500 uppercase">Servidor de Emisión</label>
-                                <div class="bg-black/40 p-4 rounded-xl border border-white/10 mt-2">
-                                    <code class="text-xs font-mono">rtmp://peertube2.cpy.re/live</code>
+
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
+                                <h3 class="text-purple-500 font-black italic mb-4 uppercase text-xs tracking-widest">Información del Directo</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="text-[10px] font-black text-gray-500 uppercase">Título del Stream</label>
+                                        <input type="text" id="edit-title" placeholder="Título que verán tus fans" class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 mt-2 text-sm focus:outline-none focus:border-purple-500">
+                                    </div>
+                                    <button onclick="updateStreamSettings()" class="bg-white text-black w-full py-3 rounded-xl font-black text-[10px] hover:bg-purple-600 hover:text-white transition uppercase tracking-widest">Guardar Cambios</button>
                                 </div>
                             </div>
                         </div>
-                        <button onclick="signOut()" class="mt-10 w-full text-red-500 font-bold text-xs uppercase hover:underline">Cerrar Sesión</button>
+
+                        <button onclick="signOut()" class="mt-10 w-full text-red-500 font-bold text-[10px] uppercase hover:underline tracking-widest">Cerrar Sesión</button>
                     </div>
                 </div>
             </section>
 
             <section id="stats" class="view-section">
-                <h2 class="text-3xl font-black italic mb-8 uppercase">Estadísticas de <span class="gradient-text">Canal</span></h2>
+                <h2 class="text-3xl font-black italic mb-8 uppercase tracking-tighter">Panel de <span class="gradient-text">Streamer</span></h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="glass p-8 rounded-[32px] text-center border-b-4 border-purple-500">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Ingresos (0% Fee)</p>
-                        <h4 class="text-3xl font-black">$0.00</h4>
+                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Ingresos Acumulados</p>
+                        <h4 class="text-3xl font-black tracking-tighter">$0.00</h4>
                     </div>
                     <div class="glass p-8 rounded-[32px] text-center">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Viewers Hoy</p>
-                        <h4 class="text-3xl font-black">0</h4>
+                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Audiencia Actual</p>
+                        <h4 class="text-3xl font-black tracking-tighter">0</h4>
                     </div>
                     <div class="glass p-8 rounded-[32px] text-center">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Seguidores</p>
-                        <h4 class="text-3xl font-black">0</h4>
+                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Nuevos Seguidores</p>
+                        <h4 class="text-3xl font-black tracking-tighter">0</h4>
                     </div>
                 </div>
             </section>
@@ -194,7 +210,6 @@
     </main>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
         const SUPABASE_URL = 'https://arlrkjxpkhphkqfduwch.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_aBW7HgaoFNbrw_wwdtQgCw_qG-gMuXl';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -208,7 +223,7 @@
 
         let isLoginMode = true;
 
-        // AUTH FUNCTIONS
+        // AUTH & PROFILE
         function openAuth() { document.getElementById('auth-modal').classList.add('active'); }
         function closeAuth() { document.getElementById('auth-modal').classList.remove('active'); }
         function toggleAuthMode() {
@@ -221,7 +236,7 @@
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             const btn = document.getElementById('auth-btn');
-            btn.innerText = "...";
+            btn.innerText = "PROCESANDO...";
 
             if (isLoginMode) {
                 const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
@@ -245,9 +260,11 @@
                     outDiv.classList.add('hidden');
                     document.getElementById('user-stream-key').innerText = profile.stream_key;
                     document.getElementById('header-avatar').src = `https://i.pravatar.cc/100?u=${user.id}`;
+                    document.getElementById('edit-title').value = profile.bio || "";
                     document.getElementById('profile-header').innerHTML = `
-                        <img src="https://i.pravatar.cc/150?u=${user.id}" class="w-24 h-24 rounded-[30px] mx-auto mb-4 border-2 border-purple-500">
+                        <img src="https://i.pravatar.cc/150?u=${user.id}" class="w-24 h-24 rounded-[30px] mx-auto mb-4 border-2 border-purple-500 shadow-xl">
                         <h2 class="text-2xl font-black italic uppercase tracking-tighter">${profile.username}</h2>
+                        <p class="text-gray-500 text-[10px] font-bold mt-1">ID: ${user.id.substring(0,8)}</p>
                     `;
                 }
             } else {
@@ -256,13 +273,45 @@
             }
         }
 
+        async function updateStreamSettings() {
+            const newTitle = document.getElementById('edit-title').value;
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const { error } = await supabaseClient.from('profiles').update({ bio: newTitle }).eq('id', user.id);
+            if (error) alert("Error"); else alert("¡Título guardado!");
+        }
+
         async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
 
-        // NAVIGATION & RENDER
+        // NAVIGATION & REALTIME CHAT
         function showView(viewId) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             if(viewId !== 'stream') document.getElementById('peertube-player').src = "";
+        }
+
+        // Suscripción Realtime para el Chat
+        supabaseClient
+            .channel('public:messages')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                const chatBox = document.getElementById('pro-chat');
+                const p = document.createElement('p');
+                p.innerHTML = `<span class="text-purple-400 font-black italic mr-2">${payload.new.username.toUpperCase()}:</span> <span class="text-white/80">${payload.new.content}</span>`;
+                chatBox.appendChild(p);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .subscribe();
+
+        async function handleChat(e) {
+            if(e.key === 'Enter') {
+                const input = document.getElementById('chat-input');
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) return alert("Inicia sesión para chatear");
+                
+                await supabaseClient.from('messages').insert([
+                    { content: input.value, user_id: user.id, username: user.email.split('@')[0] }
+                ]);
+                input.value = "";
+            }
         }
 
         function init() {
@@ -275,7 +324,7 @@
                             <img src="${s.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                         </div>
                         <div class="flex space-x-3">
-                            <img src="${s.avatar}" class="w-10 h-10 rounded-full">
+                            <img src="${s.avatar}" class="w-10 h-10 rounded-full border border-white/10">
                             <div class="overflow-hidden">
                                 <h4 class="text-sm font-black italic truncate">${s.title}</h4>
                                 <p class="text-[10px] text-gray-500 font-bold uppercase">${s.user}</p>
@@ -284,9 +333,9 @@
                     </div>
                 `;
                 sidebar.innerHTML += `
-                    <div class="flex items-center justify-between cursor-pointer" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
+                    <div class="flex items-center justify-between cursor-pointer hover:bg-white/5 p-1 rounded-lg" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
                         <div class="flex items-center space-x-3">
-                            <img src="${s.avatar}" class="w-7 h-7 rounded-full border border-red-500">
+                            <div class="relative"><img src="${s.avatar}" class="w-7 h-7 rounded-full"><div class="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-[#080808]"></div></div>
                             <p class="text-[11px] font-bold truncate">${s.user}</p>
                         </div>
                         <span class="text-[9px] text-gray-500">${s.viewers}</span>
@@ -301,26 +350,6 @@
             document.getElementById('streamer-avatar').src = avatar;
             document.getElementById('peertube-player').src = `https://peertube2.cpy.re/videos/embed/${pid}?autoplay=1`;
             showView('stream');
-            simulateChat();
-        }
-
-        function simulateChat() {
-            const chat = document.getElementById('pro-chat');
-            chat.innerHTML = "";
-            setInterval(() => {
-                if(document.getElementById('stream').classList.contains('active')) {
-                    chat.innerHTML += `<p><span class="text-purple-400 font-black italic mr-2">USER:</span> <span class="text-white/80">POG!</span></p>`;
-                    chat.scrollTop = chat.scrollHeight;
-                }
-            }, 3000);
-        }
-
-        function handleChat(e) {
-            if(e.key === 'Enter') {
-                const input = document.getElementById('chat-input');
-                document.getElementById('pro-chat').innerHTML += `<p><span class="text-green-400 font-black italic mr-2">TÚ:</span> ${input.value}</p>`;
-                input.value = "";
-            }
         }
 
         function copyKey() {
