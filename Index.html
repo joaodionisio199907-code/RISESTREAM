@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamRise | The Future of Streaming</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
+        :root { --p-color: #8b5cf6; --s-color: #d946ef; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030303; color: white; overflow: hidden; }
+        
+        /* Layout & Sidebar */
+        .sidebar { background: #080808; width: 280px; transition: all 0.3s ease; border-right: 1px solid rgba(255,255,255,0.05); }
+        .gradient-text { background: linear-gradient(135deg, var(--p-color), var(--s-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        /* Views Navigation */
+        .view-section { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        .view-section.active { display: block; opacity: 1; transform: translateY(0); }
+        
+        /* Game Cards */
+        .game-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; border-radius: 20px; aspect-ratio: 3/4; }
+        .game-card:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3); }
+        .game-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+
+        /* Auth Modal */
+        .auth-modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
+        .auth-modal.active { display: flex; align-items: center; justify-content: center; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+        @media (max-width: 768px) { .sidebar { display: none; } .mobile-nav { display: flex; } }
+    </style>
+</head>
+<body class="flex h-screen w-full">
+
+    <div id="auth-modal" class="auth-modal p-4">
+        <div class="glass max-w-md w-full p-10 rounded-[40px] text-center">
+            <h2 id="auth-title" class="text-3xl font-black italic mb-6 uppercase">Acceso <span class="text-purple-500">Rise</span></h2>
+            <div class="space-y-4">
+                <input type="email" id="auth-email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-5 focus:outline-none focus:border-purple-500">
+                <input type="password" id="auth-password" placeholder="Contraseña" class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-5 focus:outline-none focus:border-purple-500">
+                <button onclick="handleAuth()" id="auth-btn" class="w-full bg-purple-600 py-3 rounded-2xl font-black text-xs hover:bg-white hover:text-black transition uppercase">Entrar</button>
+            </div>
+            <p class="mt-6 text-xs text-gray-500 cursor-pointer" onclick="toggleAuthMode()">¿No tienes cuenta? <span class="text-purple-400 font-bold">Regístrate</span></p>
+            <button onclick="closeAuth()" class="mt-4 text-[10px] text-gray-600 uppercase font-bold">Cerrar</button>
+        </div>
+    </div>
+
+    <aside class="sidebar h-full hidden md:flex flex-col shrink-0 z-50">
+        <div class="p-6">
+            <div class="flex items-center space-x-2 mb-10 cursor-pointer" onclick="showView('home')">
+                <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center font-black">SR</div>
+                <span class="text-xl font-extrabold tracking-tighter italic uppercase">Stream<span class="text-purple-500">Rise</span></span>
+            </div>
+            <nav class="space-y-1">
+                <button onclick="showView('home')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-compass"></i> <span class="text-sm font-semibold">Explorar</span>
+                </button>
+                <button onclick="showView('stats')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-chart-pie"></i> <span class="text-sm font-semibold">Estadísticas</span>
+                </button>
+                <button onclick="showView('profile')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-user-gear"></i> <span class="text-sm font-semibold">Mi Canal</span>
+                </button>
+            </nav>
+            <div class="mt-12">
+                <p class="text-[10px] font-bold text-gray-600 uppercase mb-4 tracking-widest">Siguiendo</p>
+                <div id="sidebar-streams" class="space-y-4"></div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-grow flex flex-col h-full overflow-hidden relative">
+        <nav class="h-20 flex justify-between items-center px-8 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
+            <div class="flex items-center flex-grow max-w-xl">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" placeholder="Buscar..." class="w-full bg-white/5 border border-white/10 rounded-2xl py-2 pl-12 pr-4 text-sm focus:outline-none">
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 ml-6">
+                <button onclick="showView('profile')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black hover:bg-purple-500 hover:text-white transition">GO LIVE</button>
+                <div id="nav-user-avatar" class="w-10 h-10 rounded-xl bg-white/10 overflow-hidden cursor-pointer" onclick="showView('profile')">
+                    <img src="https://i.pravatar.cc/100?u=guest" id="header-avatar" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </nav>
+
+        <div id="scroll-container" class="flex-grow overflow-y-auto p-4 md:p-10">
+            
+            <section id="home" class="view-section active">
+                <div class="relative w-full aspect-[21/9] rounded-[40px] overflow-hidden border border-white/10 mb-12 group cursor-pointer" onclick="openStream('IbaiLlanos', 'KINGS LEAGUE FINALS', 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000', 'https://i.pravatar.cc/150?u=ibai')">
+                    <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-10 left-10">
+                        <span class="bg-red-600 px-3 py-1 rounded text-[10px] font-black uppercase mb-2 inline-block">LIVE</span>
+                        <h2 class="text-4xl font-black italic tracking-tighter">KINGS LEAGUE FINALS</h2>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-black italic mb-6 uppercase tracking-tight">Categorías <span class="text-purple-500">Trending</span></h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 mb-12" id="games-grid">
+                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/21779-285x380.jpg" class="w-full h-full object-cover"></div>
+                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/516575-285x380.jpg" class="w-full h-full object-cover"></div>
+                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/509658-285x380.jpg" class="w-full h-full object-cover"></div>
+                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/27471_IGDB-285x380.jpg" class="w-full h-full object-cover"></div>
+                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/32982_IGDB-285x380.jpg" class="w-full h-full object-cover"></div>
+                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/33214-285x380.jpg" class="w-full h-full object-cover"></div>
+                </div>
+
+                <h3 class="text-xl font-black italic mb-6 uppercase tracking-tight">Streams <span class="text-purple-500">Recomendados</span></h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="streams-grid"></div>
+            </section>
+
+            <section id="stream" class="view-section">
+                <div class="grid lg:grid-cols-4 gap-8">
+                    <div class="lg:col-span-3">
+                        <div class="aspect-video bg-black rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative">
+                            <iframe id="peertube-player" class="w-full h-full" src="" frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
+                        </div>
+                        <div class="mt-6 flex justify-between items-center bg-white/5 p-6 rounded-[32px]">
+                            <div class="flex space-x-4">
+                                <img id="streamer-avatar" src="" class="w-14 h-14 rounded-full border-2 border-purple-500">
+                                <div>
+                                    <h2 id="stream-title" class="text-xl font-black italic"></h2>
+                                    <p id="streamer-name" class="text-purple-400 font-bold text-sm"></p>
+                                </div>
+                            </div>
+                            <button class="bg-white text-black px-6 py-2 rounded-xl font-black text-xs">SEGUIR</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1 glass rounded-[32px] h-[600px] flex flex-col">
+                        <div class="p-4 border-b border-white/10 text-[10px] font-black uppercase text-gray-500">Live Chat</div>
+                        <div id="pro-chat" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs"></div>
+                        <div class="p-4"><input type="text" id="chat-input" onkeypress="handleChat(event)" placeholder="Escribe..." class="w-full bg-white/5 rounded-xl py-2 px-4 focus:outline-none border border-white/10"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="profile" class="view-section">
+                <div class="max-w-2xl mx-auto">
+                    <div id="user-logged-out" class="glass p-12 rounded-[50px] text-center">
+                        <i class="fa-solid fa-user-shield text-5xl mb-6 text-purple-500"></i>
+                        <h2 class="text-2xl font-black mb-6">Gestiona tu canal Rise</h2>
+                        <button onclick="openAuth()" class="bg-purple-600 px-8 py-3 rounded-2xl font-black text-xs">LOGIN / REGISTRO</button>
+                    </div>
+                    
+                    <div id="user-logged-in" class="hidden glass p-10 rounded-[50px]">
+                        <div id="profile-header" class="text-center mb-8"></div>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-[10px] font-black text-gray-500 uppercase">Clave de Stream (OBS)</label>
+                                <div class="bg-black/40 p-4 rounded-xl border border-white/10 flex justify-between items-center mt-2">
+                                    <code id="user-stream-key" class="text-purple-400 font-mono text-xs"></code>
+                                    <i class="fa-solid fa-copy cursor-pointer text-gray-500" onclick="copyKey()"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black text-gray-500 uppercase">Servidor de Emisión</label>
+                                <div class="bg-black/40 p-4 rounded-xl border border-white/10 mt-2">
+                                    <code class="text-xs font-mono">rtmp://peertube2.cpy.re/live</code>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="signOut()" class="mt-10 w-full text-red-500 font-bold text-xs uppercase hover:underline">Cerrar Sesión</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="stats" class="view-section">
+                <h2 class="text-3xl font-black italic mb-8 uppercase">Estadísticas de <span class="gradient-text">Canal</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass p-8 rounded-[32px] text-center border-b-4 border-purple-500">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Ingresos (0% Fee)</p>
+                        <h4 class="text-3xl font-black">$0.00</h4>
+                    </div>
+                    <div class="glass p-8 rounded-[32px] text-center">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Viewers Hoy</p>
+                        <h4 class="text-3xl font-black">0</h4>
+                    </div>
+                    <div class="glass p-8 rounded-[32px] text-center">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Seguidores</p>
+                        <h4 class="text-3xl font-black">0</h4>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // CONFIGURACIÓN SUPABASE
+        const SUPABASE_URL = 'https://arlrkjxpkhphkqfduwch.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_aBW7HgaoFNbrw_wwdtQgCw_qG-gMuXl';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const streams = [
+            { id: '67b78995-5e6f-45b9-9150-1011c3a64731', user: 'RubiusZ', title: 'MEMES Y REACCIONES 💀', viewers: '45.2k', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=rub' },
+            { id: '9076f770-5b23-448c-b03a-3c4078502f5e', user: 'AuronPlay', title: 'MINECRAFT EXTREMO!!', viewers: '110k', img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=aur' },
+            { id: '67b78995-5e6f-45b9-9150-1011c3a64731', user: 'TheGrefg', title: 'PRESENTANDO SKIN', viewers: '80k', img: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=grefg' },
+            { id: '9076f770-5b23-448c-b03a-3c4078502f5e', user: 'IlloJuan', title: 'JOYITAS PS2', viewers: '35k', img: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=illo' }
+        ];
+
+        let isLoginMode = true;
+
+        // AUTH FUNCTIONS
+        function openAuth() { document.getElementById('auth-modal').classList.add('active'); }
+        function closeAuth() { document.getElementById('auth-modal').classList.remove('active'); }
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "Acceso Rise" : "Crea tu cuenta";
+            document.getElementById('auth-btn').innerText = isLoginMode ? "Entrar" : "Registrarse";
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const btn = document.getElementById('auth-btn');
+            btn.innerText = "...";
+
+            if (isLoginMode) {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) alert(error.message); else { closeAuth(); checkUser(); }
+            } else {
+                const { error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) alert(error.message); else alert("Confirma tu email.");
+            }
+            btn.innerText = isLoginMode ? "Entrar" : "Registrarse";
+        }
+
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const inDiv = document.getElementById('user-logged-in');
+            const outDiv = document.getElementById('user-logged-out');
+
+            if (user) {
+                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                if (profile) {
+                    inDiv.classList.remove('hidden');
+                    outDiv.classList.add('hidden');
+                    document.getElementById('user-stream-key').innerText = profile.stream_key;
+                    document.getElementById('header-avatar').src = `https://i.pravatar.cc/100?u=${user.id}`;
+                    document.getElementById('profile-header').innerHTML = `
+                        <img src="https://i.pravatar.cc/150?u=${user.id}" class="w-24 h-24 rounded-[30px] mx-auto mb-4 border-2 border-purple-500">
+                        <h2 class="text-2xl font-black italic uppercase tracking-tighter">${profile.username}</h2>
+                    `;
+                }
+            } else {
+                inDiv.classList.add('hidden');
+                outDiv.classList.remove('hidden');
+            }
+        }
+
+        async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
+
+        // NAVIGATION & RENDER
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            if(viewId !== 'stream') document.getElementById('peertube-player').src = "";
+        }
+
+        function init() {
+            const grid = document.getElementById('streams-grid');
+            const sidebar = document.getElementById('sidebar-streams');
+            streams.forEach(s => {
+                grid.innerHTML += `
+                    <div class="group cursor-pointer" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
+                        <div class="relative aspect-video rounded-3xl overflow-hidden mb-4 border border-white/5">
+                            <img src="${s.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="flex space-x-3">
+                            <img src="${s.avatar}" class="w-10 h-10 rounded-full">
+                            <div class="overflow-hidden">
+                                <h4 class="text-sm font-black italic truncate">${s.title}</h4>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase">${s.user}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                sidebar.innerHTML += `
+                    <div class="flex items-center justify-between cursor-pointer" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
+                        <div class="flex items-center space-x-3">
+                            <img src="${s.avatar}" class="w-7 h-7 rounded-full border border-red-500">
+                            <p class="text-[11px] font-bold truncate">${s.user}</p>
+                        </div>
+                        <span class="text-[9px] text-gray-500">${s.viewers}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function openStream(user, title, img, avatar, pid) {
+            document.getElementById('stream-title').innerText = title;
+            document.getElementById('streamer-name').innerText = `@${user}`;
+            document.getElementById('streamer-avatar').src = avatar;
+            document.getElementById('peertube-player').src = `https://peertube2.cpy.re/videos/embed/${pid}?autoplay=1`;
+            showView('stream');
+            simulateChat();
+        }
+
+        function simulateChat() {
+            const chat = document.getElementById('pro-chat');
+            chat.innerHTML = "";
+            setInterval(() => {
+                if(document.getElementById('stream').classList.contains('active')) {
+                    chat.innerHTML += `<p><span class="text-purple-400 font-black italic mr-2">USER:</span> <span class="text-white/80">POG!</span></p>`;
+                    chat.scrollTop = chat.scrollHeight;
+                }
+            }, 3000);
+        }
+
+        function handleChat(e) {
+            if(e.key === 'Enter') {
+                const input = document.getElementById('chat-input');
+                document.getElementById('pro-chat').innerHTML += `<p><span class="text-green-400 font-black italic mr-2">TÚ:</span> ${input.value}</p>`;
+                input.value = "";
+            }
+        }
+
+        function copyKey() {
+            const key = document.getElementById('user-stream-key').innerText;
+            navigator.clipboard.writeText(key);
+            alert("¡Clave copiada!");
+        }
+
+        window.onload = () => { init(); checkUser(); };
+    </script>
+</body>
+</html>
