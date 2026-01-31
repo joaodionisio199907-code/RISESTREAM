@@ -18,8 +18,6 @@
         .view-section.active { display: block; opacity: 1; transform: translateY(0); }
         .auth-modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
         .auth-modal.active { display: flex; align-items: center; justify-content: center; }
-        .game-card { transition: all 0.4s ease; cursor: pointer; border-radius: 20px; aspect-ratio: 3/4; overflow: hidden; }
-        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
     </style>
@@ -49,15 +47,12 @@
                 <button onclick="showView('home')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400">
                     <i class="fa-solid fa-compass"></i> <span class="text-sm font-semibold">Explorar</span>
                 </button>
-                <button onclick="showView('stats')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400">
-                    <i class="fa-solid fa-chart-pie"></i> <span class="text-sm font-semibold">Estadísticas</span>
-                </button>
                 <button onclick="showView('profile')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400">
                     <i class="fa-solid fa-user-gear"></i> <span class="text-sm font-semibold">Mi Canal</span>
                 </button>
             </nav>
             <div class="mt-12">
-                <p class="text-[10px] font-bold text-gray-600 uppercase mb-4 tracking-widest">En Vivo</p>
+                <p class="text-[10px] font-bold text-gray-600 uppercase mb-4 tracking-widest">Gente en Vivo</p>
                 <div id="sidebar-streams" class="space-y-4"></div>
             </div>
         </div>
@@ -70,73 +65,63 @@
                 <input type="text" placeholder="Buscar directos..." class="w-full bg-white/5 border border-white/10 rounded-2xl py-2 pl-12 pr-4 text-sm focus:outline-none">
             </div>
             <div class="flex items-center space-x-4 ml-6">
-                <button onclick="showView('profile')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-purple-500 hover:text-white transition">Go Live</button>
-                <div class="w-10 h-10 rounded-xl bg-white/10 overflow-hidden cursor-pointer" onclick="showView('profile')">
-                    <img src="https://i.pravatar.cc/100?u=guest" id="header-avatar" class="w-full h-full object-cover">
-                </div>
+                <button onclick="showView('profile')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-purple-500 transition">Go Live</button>
+                <img src="https://i.pravatar.cc/100?u=guest" id="header-avatar" class="w-10 h-10 rounded-xl bg-white/10 cursor-pointer" onclick="showView('profile')">
             </div>
         </nav>
 
         <div id="scroll-container" class="flex-grow overflow-y-auto p-4 md:p-10">
+            
             <section id="home" class="view-section active">
-                <div class="relative w-full aspect-[21/9] rounded-[40px] overflow-hidden border border-white/10 mb-12 group cursor-pointer">
-                    <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                    <div class="absolute bottom-10 left-10">
-                        <span class="bg-red-600 px-3 py-1 rounded text-[10px] font-black uppercase mb-2 inline-block">LIVE</span>
-                        <h2 class="text-4xl font-black italic tracking-tighter uppercase">Kings League Finals</h2>
-                    </div>
-                </div>
-                <h3 class="text-xl font-black italic mb-6 uppercase tracking-tight">Streams <span class="text-purple-500">Destacados</span></h3>
+                <h3 class="text-xl font-black italic mb-6 uppercase tracking-tight">Creciente <span class="text-purple-500">Ahora</span></h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="streams-grid"></div>
             </section>
 
             <section id="stream" class="view-section">
-                <div class="grid lg:grid-cols-4 gap-8">
-                    <div class="lg:col-span-3">
-                        <div class="aspect-video bg-black rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
-                            <iframe id="peertube-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                        <div class="mt-6 flex justify-between items-center bg-white/5 p-6 rounded-[32px]">
-                            <div class="flex space-x-4">
-                                <img id="streamer-avatar" src="" class="w-14 h-14 rounded-full border-2 border-purple-500">
-                                <div>
-                                    <h2 id="stream-title" class="text-xl font-black italic"></h2>
-                                    <p id="streamer-name" class="text-purple-400 font-bold text-sm"></p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="max-w-5xl mx-auto">
+                    <div class="aspect-video bg-black rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
+                        <iframe id="peertube-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <div class="lg:col-span-1 glass rounded-[32px] h-[600px] flex flex-col overflow-hidden">
-                        <div class="p-4 border-b border-white/10 text-[10px] font-black uppercase text-gray-500">Chat en vivo</div>
-                        <div id="pro-chat" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs"></div>
-                        <div class="p-4 bg-black/20">
-                            <input type="text" id="chat-input" onkeypress="handleChat(event)" placeholder="Enviar mensaje..." class="w-full bg-white/5 rounded-xl py-3 px-4 focus:outline-none border border-white/10 text-xs text-white">
+                    <div class="mt-8 flex items-center space-x-6 p-6 glass rounded-[30px]">
+                        <img id="streamer-avatar" src="" class="w-16 h-16 rounded-full border-2 border-purple-500">
+                        <div>
+                            <h2 id="stream-title" class="text-2xl font-black italic">Canal</h2>
+                            <p id="streamer-name" class="text-purple-400 font-bold uppercase text-xs"></p>
                         </div>
                     </div>
                 </div>
             </section>
 
             <section id="profile" class="view-section">
-                <div class="max-w-2xl mx-auto">
+                <div class="max-w-xl mx-auto space-y-6">
                     <div id="user-logged-out" class="glass p-12 rounded-[50px] text-center">
-                        <i class="fa-solid fa-user-shield text-5xl mb-6 text-purple-500"></i>
                         <h2 class="text-2xl font-black mb-6 italic">Inicia sesión para transmitir</h2>
                         <button onclick="openAuth()" class="bg-purple-600 px-8 py-3 rounded-2xl font-black text-xs uppercase">Login / Registro</button>
                     </div>
-                    
-                    <div id="user-logged-in" class="hidden glass p-10 rounded-[50px]">
-                        <div id="profile-header" class="text-center mb-10"></div>
-                        <div class="space-y-6">
-                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
-                                <label class="text-[10px] font-black text-gray-500 uppercase">Tu Clave de Stream</label>
-                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 mt-2 flex justify-between items-center">
-                                    <code id="user-stream-key" class="text-purple-400 font-mono text-xs">********</code>
-                                    <i class="fa-solid fa-copy cursor-pointer text-gray-500 hover:text-white" onclick="copyKey()"></i>
-                                </div>
-                            </div>
-                            <button onclick="signOut()" class="w-full text-red-500 font-bold text-[10px] uppercase tracking-widest">Cerrar Sesión</button>
+
+                    <div id="user-logged-in" class="hidden space-y-6">
+                        <div class="glass p-10 rounded-[50px] text-center">
+                            <img id="my-avatar" class="w-24 h-24 rounded-[30px] mx-auto mb-4 border-2 border-purple-500 shadow-xl">
+                            <h2 id="my-username" class="text-2xl font-black italic uppercase">Usuario</h2>
                         </div>
+
+                        <div class="glass p-8 rounded-[40px] space-y-4">
+                            <h4 class="text-xs font-black uppercase text-gray-500">Configuración de directo</h4>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-600 uppercase block mb-2">ID del Video (Ej: de PeerTube)</label>
+                                <input type="text" id="video-id-input" placeholder="ID de video..." class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-5 focus:outline-none focus:border-purple-500 text-sm">
+                            </div>
+                            <button onclick="updateMyStream()" class="w-full bg-white text-black py-3 rounded-2xl font-black text-[10px] uppercase hover:bg-purple-500 hover:text-white transition">Actualizar mi Canal</button>
+                        </div>
+
+                        <div class="glass p-8 rounded-[40px]">
+                            <label class="text-[10px] font-black text-gray-500 uppercase">Tu Clave de Stream (OBS)</label>
+                            <div class="bg-black/40 p-3 rounded-xl border border-white/5 mt-2 flex justify-between items-center">
+                                <code id="user-stream-key" class="text-purple-400 font-mono text-xs">********</code>
+                                <i class="fa-solid fa-copy cursor-pointer text-gray-500 hover:text-white" onclick="copyKey()"></i>
+                            </div>
+                        </div>
+                        <button onclick="signOut()" class="w-full text-red-500 font-bold text-[10px] uppercase tracking-widest">Cerrar Sesión</button>
                     </div>
                 </div>
             </section>
@@ -148,123 +133,90 @@
         const SUPABASE_KEY = 'sb_publishable_aBW7HgaoFNbrw_wwdtQgCw_qG-gMuXl';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let isLoginMode = true;
+        let myId = null;
 
-        // AUTH FUNCTIONS
-        function openAuth() { document.getElementById('auth-modal').classList.add('active'); }
-        function closeAuth() { document.getElementById('auth-modal').classList.remove('active'); }
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "Acceso Rise" : "Crea tu cuenta";
-            document.getElementById('auth-btn').innerText = isLoginMode ? "Entrar" : "Registrarse";
-        }
-
+        // AUTH
         async function handleAuth() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            const btn = document.getElementById('auth-btn');
-            
-            if (!email || !password) return alert("Completa los campos");
-            btn.innerText = "PROCESANDO...";
-
-            try {
-                if (isLoginMode) {
-                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-                    closeAuth();
-                    await checkUser();
-                } else {
-                    const { error } = await supabaseClient.auth.signUp({ email, password });
-                    if (error) throw error;
-                    alert("¡Registro exitoso! Ya puedes entrar.");
-                    isLoginMode = true;
-                    toggleAuthMode();
-                }
-            } catch (err) {
-                alert("Error: " + err.message);
-            } finally {
-                btn.innerText = isLoginMode ? "Entrar" : "Registrarse";
-            }
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) alert(error.message);
+            else { closeAuth(); checkUser(); }
         }
 
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            const inDiv = document.getElementById('user-logged-in');
-            const outDiv = document.getElementById('user-logged-out');
-
             if (user) {
+                myId = user.id;
                 const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
-                if (profile) {
-                    inDiv.classList.remove('hidden');
-                    outDiv.classList.add('hidden');
-                    document.getElementById('user-stream-key').innerText = profile.stream_key;
-                    document.getElementById('header-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`;
-                    document.getElementById('profile-header').innerHTML = `
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}" class="w-24 h-24 rounded-[30px] mx-auto mb-4 border-2 border-purple-500 shadow-xl">
-                        <h2 class="text-2xl font-black italic uppercase">${profile.username}</h2>
-                    `;
-                }
+                document.getElementById('user-logged-in').classList.remove('hidden');
+                document.getElementById('user-logged-out').classList.add('hidden');
+                document.getElementById('my-username').innerText = profile.username;
+                document.getElementById('user-stream-key').innerText = profile.stream_key;
+                document.getElementById('video-id-input').value = profile.last_video_id || '';
+                const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`;
+                document.getElementById('my-avatar').src = avatarUrl;
+                document.getElementById('header-avatar').src = avatarUrl;
             }
         }
 
-        async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
-
-        // NAVIGATION
-        function showView(viewId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            if(viewId !== 'stream') document.getElementById('peertube-player').src = "";
+        // STREAM LOGIC
+        async function updateMyStream() {
+            const vid = document.getElementById('video-id-input').value;
+            const { error } = await supabaseClient.from('profiles').update({ last_video_id: vid }).eq('id', myId);
+            if (error) alert("Error: " + error.message);
+            else { alert("¡Perfil actualizado! Estás en vivo."); loadStreams(); }
         }
 
-        function openStream(user, title, img, avatar, pid) {
-            document.getElementById('stream-title').innerText = title;
-            document.getElementById('streamer-name').innerText = `@${user}`;
-            document.getElementById('streamer-avatar').src = avatar;
-            document.getElementById('peertube-player').src = `https://peertube2.cpy.re/videos/embed/${pid}?autoplay=1`;
-            showView('stream');
-        }
-
-        function copyKey() {
-            const key = document.getElementById('user-stream-key').innerText;
-            navigator.clipboard.writeText(key);
-            alert("¡Clave copiada!");
-        }
-
-        // INIT
-        window.onload = () => {
-            const streams = [
-                { id: '67b78995-5e6f-45b9-9150-1011c3a64731', user: 'RubiusZ', title: 'MEMES Y REACCIONES 💀', viewers: '45.2k', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=rub' },
-                { id: '9076f770-5b23-448c-b03a-3c4078502f5e', user: 'AuronPlay', title: 'MINECRAFT EXTREMO!!', viewers: '110k', img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=aur' }
-            ];
-            
+        async function loadStreams() {
+            // Solo cargamos usuarios que tengan un video puesto
+            const { data: profiles } = await supabaseClient.from('profiles').select('*').not('last_video_id', 'is', null);
             const grid = document.getElementById('streams-grid');
             const sidebar = document.getElementById('sidebar-streams');
-            
-            streams.forEach(s => {
+            grid.innerHTML = ''; sidebar.innerHTML = '';
+
+            profiles.forEach(p => {
+                const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.id}`;
                 grid.innerHTML += `
-                    <div class="group cursor-pointer" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
-                        <div class="relative aspect-video rounded-3xl overflow-hidden mb-4 border border-white/5">
-                            <img src="${s.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    <div class="glass p-4 rounded-[30px] cursor-pointer hover:border-purple-500 transition" onclick="openStream('${p.username}', '${p.last_video_id}', '${avatar}')">
+                        <div class="aspect-video bg-purple-900/20 rounded-2xl mb-4 flex items-center justify-center relative overflow-hidden text-purple-600 font-black">
+                             LIVE <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=400" class="absolute inset-0 opacity-10 object-cover">
                         </div>
-                        <div class="flex space-x-3">
-                            <img src="${s.avatar}" class="w-10 h-10 rounded-full">
+                        <div class="flex items-center space-x-3">
+                            <img src="${avatar}" class="w-10 h-10 rounded-full bg-white/5">
                             <div>
-                                <h4 class="text-sm font-black italic truncate">${s.title}</h4>
-                                <p class="text-[10px] text-gray-500 font-bold uppercase">${s.user}</p>
+                                <h4 class="text-sm font-black italic uppercase">${p.username}</h4>
+                                <p class="text-[10px] text-gray-500 font-bold tracking-widest">TRANSMITIENDO</p>
                             </div>
                         </div>
                     </div>`;
                 sidebar.innerHTML += `
-                    <div class="flex items-center justify-between cursor-pointer hover:bg-white/5 p-1 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <img src="${s.avatar}" class="w-7 h-7 rounded-full">
-                            <p class="text-[11px] font-bold">${s.user}</p>
-                        </div>
-                        <span class="text-[9px] text-red-500 font-bold">LIVE</span>
+                    <div class="flex items-center space-x-3 p-1 cursor-pointer hover:text-purple-500" onclick="openStream('${p.username}', '${p.last_video_id}', '${avatar}')">
+                        <img src="${avatar}" class="w-6 h-6 rounded-full">
+                        <span class="text-[11px] font-bold uppercase">${p.username}</span>
                     </div>`;
             });
-            checkUser();
-        };
+        }
+
+        function openStream(user, vid, avatar) {
+            document.getElementById('stream-title').innerText = "Streaming de " + user;
+            document.getElementById('streamer-name').innerText = "@" + user;
+            document.getElementById('streamer-avatar').src = avatar;
+            document.getElementById('peertube-player').src = `https://peertube2.cpy.re/videos/embed/${vid}?autoplay=1`;
+            showView('stream');
+        }
+
+        function showView(id) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function openAuth() { document.getElementById('auth-modal').classList.add('active'); }
+        function closeAuth() { document.getElementById('auth-modal').classList.remove('active'); }
+        async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
+        function copyKey() { navigator.clipboard.writeText(document.getElementById('user-stream-key').innerText); alert("Clave copiada!"); }
+
+        window.onload = () => { checkUser(); loadStreams(); };
     </script>
 </body>
 </html>
