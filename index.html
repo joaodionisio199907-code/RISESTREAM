@@ -12,24 +12,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
         :root { --p-color: #8b5cf6; --s-color: #d946ef; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030303; color: white; overflow: hidden; }
-        
-        .sidebar { background: #080808; width: 280px; transition: all 0.3s ease; border-right: 1px solid rgba(255,255,255,0.05); }
-        .gradient-text { background: linear-gradient(135deg, var(--p-color), var(--s-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar { background: #080808; width: 280px; border-right: 1px solid rgba(255,255,255,0.05); }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        
         .view-section { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
         .view-section.active { display: block; opacity: 1; transform: translateY(0); }
-        
-        .game-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; border-radius: 20px; aspect-ratio: 3/4; }
-        .game-card:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3); }
-        .game-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
-
         .auth-modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
         .auth-modal.active { display: flex; align-items: center; justify-content: center; }
-
+        .game-card { transition: all 0.4s ease; cursor: pointer; border-radius: 20px; aspect-ratio: 3/4; overflow: hidden; }
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
-        @media (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
 <body class="flex h-screen w-full">
@@ -54,18 +46,18 @@
                 <span class="text-xl font-extrabold tracking-tighter italic uppercase">Stream<span class="text-purple-500">Rise</span></span>
             </div>
             <nav class="space-y-1">
-                <button onclick="showView('home')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white">
+                <button onclick="showView('home')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400">
                     <i class="fa-solid fa-compass"></i> <span class="text-sm font-semibold">Explorar</span>
                 </button>
-                <button onclick="showView('stats')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white">
+                <button onclick="showView('stats')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400">
                     <i class="fa-solid fa-chart-pie"></i> <span class="text-sm font-semibold">Estadísticas</span>
                 </button>
-                <button onclick="showView('profile')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white">
+                <button onclick="showView('profile')" class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition text-gray-400">
                     <i class="fa-solid fa-user-gear"></i> <span class="text-sm font-semibold">Mi Canal</span>
                 </button>
             </nav>
             <div class="mt-12">
-                <p class="text-[10px] font-bold text-gray-600 uppercase mb-4 tracking-widest">Siguiendo</p>
+                <p class="text-[10px] font-bold text-gray-600 uppercase mb-4 tracking-widest">En Vivo</p>
                 <div id="sidebar-streams" class="space-y-4"></div>
             </div>
         </div>
@@ -73,14 +65,12 @@
 
     <main class="flex-grow flex flex-col h-full overflow-hidden relative">
         <nav class="h-20 flex justify-between items-center px-8 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
-            <div class="flex items-center flex-grow max-w-xl">
-                <div class="relative w-full">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                    <input type="text" placeholder="Buscar..." class="w-full bg-white/5 border border-white/10 rounded-2xl py-2 pl-12 pr-4 text-sm focus:outline-none">
-                </div>
+            <div class="relative w-full max-w-xl">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                <input type="text" placeholder="Buscar directos..." class="w-full bg-white/5 border border-white/10 rounded-2xl py-2 pl-12 pr-4 text-sm focus:outline-none">
             </div>
             <div class="flex items-center space-x-4 ml-6">
-                <button onclick="showView('profile')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black hover:bg-purple-500 hover:text-white transition uppercase">Go Live</button>
+                <button onclick="showView('profile')" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-purple-500 hover:text-white transition">Go Live</button>
                 <div class="w-10 h-10 rounded-xl bg-white/10 overflow-hidden cursor-pointer" onclick="showView('profile')">
                     <img src="https://i.pravatar.cc/100?u=guest" id="header-avatar" class="w-full h-full object-cover">
                 </div>
@@ -88,35 +78,23 @@
         </nav>
 
         <div id="scroll-container" class="flex-grow overflow-y-auto p-4 md:p-10">
-            
             <section id="home" class="view-section active">
-                <div class="relative w-full aspect-[21/9] rounded-[40px] overflow-hidden border border-white/10 mb-12 group cursor-pointer" onclick="openStream('IbaiLlanos', 'KINGS LEAGUE FINALS', '...', 'https://i.pravatar.cc/150?u=ibai', '67b78995-5e6f-45b9-9150-1011c3a64731')">
-                    <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                <div class="relative w-full aspect-[21/9] rounded-[40px] overflow-hidden border border-white/10 mb-12 group cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                     <div class="absolute bottom-10 left-10">
                         <span class="bg-red-600 px-3 py-1 rounded text-[10px] font-black uppercase mb-2 inline-block">LIVE</span>
                         <h2 class="text-4xl font-black italic tracking-tighter uppercase">Kings League Finals</h2>
                     </div>
                 </div>
-
-                <h3 class="text-xl font-black italic mb-6 uppercase tracking-tight">Categorías <span class="text-purple-500">Trending</span></h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 mb-12" id="games-grid">
-                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/21779-285x380.jpg" class="w-full h-full object-cover"></div>
-                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/516575-285x380.jpg" class="w-full h-full object-cover"></div>
-                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/509658-285x380.jpg" class="w-full h-full object-cover"></div>
-                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/27471_IGDB-285x380.jpg" class="w-full h-full object-cover"></div>
-                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/32982_IGDB-285x380.jpg" class="w-full h-full object-cover"></div>
-                    <div class="game-card"><img src="https://static-cdn.jtvnw.net/ttv-boxart/33214-285x380.jpg" class="w-full h-full object-cover"></div>
-                </div>
-
-                <h3 class="text-xl font-black italic mb-6 uppercase tracking-tight">Streams <span class="text-purple-500">Recomendados</span></h3>
+                <h3 class="text-xl font-black italic mb-6 uppercase tracking-tight">Streams <span class="text-purple-500">Destacados</span></h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="streams-grid"></div>
             </section>
 
             <section id="stream" class="view-section">
                 <div class="grid lg:grid-cols-4 gap-8">
                     <div class="lg:col-span-3">
-                        <div class="aspect-video bg-black rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative">
+                        <div class="aspect-video bg-black rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
                             <iframe id="peertube-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
                         </div>
                         <div class="mt-6 flex justify-between items-center bg-white/5 p-6 rounded-[32px]">
@@ -127,14 +105,13 @@
                                     <p id="streamer-name" class="text-purple-400 font-bold text-sm"></p>
                                 </div>
                             </div>
-                            <button class="bg-white text-black px-6 py-2 rounded-xl font-black text-xs">SEGUIR</button>
                         </div>
                     </div>
                     <div class="lg:col-span-1 glass rounded-[32px] h-[600px] flex flex-col overflow-hidden">
-                        <div class="p-4 border-b border-white/10 text-[10px] font-black uppercase text-gray-500 tracking-widest">Live Chat</div>
-                        <div id="pro-chat" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs scroll-smooth"></div>
+                        <div class="p-4 border-b border-white/10 text-[10px] font-black uppercase text-gray-500">Chat en vivo</div>
+                        <div id="pro-chat" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs"></div>
                         <div class="p-4 bg-black/20">
-                            <input type="text" id="chat-input" onkeypress="handleChat(event)" placeholder="Enviar mensaje..." class="w-full bg-white/5 rounded-xl py-3 px-4 focus:outline-none border border-white/10 text-xs">
+                            <input type="text" id="chat-input" onkeypress="handleChat(event)" placeholder="Enviar mensaje..." class="w-full bg-white/5 rounded-xl py-3 px-4 focus:outline-none border border-white/10 text-xs text-white">
                         </div>
                     </div>
                 </div>
@@ -144,68 +121,25 @@
                 <div class="max-w-2xl mx-auto">
                     <div id="user-logged-out" class="glass p-12 rounded-[50px] text-center">
                         <i class="fa-solid fa-user-shield text-5xl mb-6 text-purple-500"></i>
-                        <h2 class="text-2xl font-black mb-6 italic">Gestiona tu canal Rise</h2>
-                        <button onclick="openAuth()" class="bg-purple-600 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest">Login / Registro</button>
+                        <h2 class="text-2xl font-black mb-6 italic">Inicia sesión para transmitir</h2>
+                        <button onclick="openAuth()" class="bg-purple-600 px-8 py-3 rounded-2xl font-black text-xs uppercase">Login / Registro</button>
                     </div>
                     
                     <div id="user-logged-in" class="hidden glass p-10 rounded-[50px]">
                         <div id="profile-header" class="text-center mb-10"></div>
-                        
-                        <div class="space-y-8">
+                        <div class="space-y-6">
                             <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
-                                <h3 class="text-purple-500 font-black italic mb-4 uppercase text-xs tracking-widest">Configuración de OBS</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="text-[10px] font-black text-gray-500 uppercase">Servidor RTMP</label>
-                                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 mt-2 flex justify-between">
-                                            <code class="text-xs font-mono text-gray-300">rtmp://peertube2.cpy.re/live</code>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="text-[10px] font-black text-gray-500 uppercase">Tu Clave de Stream</label>
-                                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 mt-2 flex justify-between items-center">
-                                            <code id="user-stream-key" class="text-purple-400 font-mono text-xs">********</code>
-                                            <i class="fa-solid fa-copy cursor-pointer text-gray-500 hover:text-white" onclick="copyKey()"></i>
-                                        </div>
-                                    </div>
+                                <label class="text-[10px] font-black text-gray-500 uppercase">Tu Clave de Stream</label>
+                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 mt-2 flex justify-between items-center">
+                                    <code id="user-stream-key" class="text-purple-400 font-mono text-xs">********</code>
+                                    <i class="fa-solid fa-copy cursor-pointer text-gray-500 hover:text-white" onclick="copyKey()"></i>
                                 </div>
                             </div>
-
-                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
-                                <h3 class="text-purple-500 font-black italic mb-4 uppercase text-xs tracking-widest">Información del Directo</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="text-[10px] font-black text-gray-500 uppercase">Título del Stream</label>
-                                        <input type="text" id="edit-title" placeholder="Título que verán tus fans" class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 mt-2 text-sm focus:outline-none focus:border-purple-500">
-                                    </div>
-                                    <button onclick="updateStreamSettings()" class="bg-white text-black w-full py-3 rounded-xl font-black text-[10px] hover:bg-purple-600 hover:text-white transition uppercase tracking-widest">Guardar Cambios</button>
-                                </div>
-                            </div>
+                            <button onclick="signOut()" class="w-full text-red-500 font-bold text-[10px] uppercase tracking-widest">Cerrar Sesión</button>
                         </div>
-
-                        <button onclick="signOut()" class="mt-10 w-full text-red-500 font-bold text-[10px] uppercase hover:underline tracking-widest">Cerrar Sesión</button>
                     </div>
                 </div>
             </section>
-
-            <section id="stats" class="view-section">
-                <h2 class="text-3xl font-black italic mb-8 uppercase tracking-tighter">Panel de <span class="gradient-text">Streamer</span></h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass p-8 rounded-[32px] text-center border-b-4 border-purple-500">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Ingresos Acumulados</p>
-                        <h4 class="text-3xl font-black tracking-tighter">$0.00</h4>
-                    </div>
-                    <div class="glass p-8 rounded-[32px] text-center">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Audiencia Actual</p>
-                        <h4 class="text-3xl font-black tracking-tighter">0</h4>
-                    </div>
-                    <div class="glass p-8 rounded-[32px] text-center">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Nuevos Seguidores</p>
-                        <h4 class="text-3xl font-black tracking-tighter">0</h4>
-                    </div>
-                </div>
-            </section>
-
         </div>
     </main>
 
@@ -214,16 +148,9 @@
         const SUPABASE_KEY = 'sb_publishable_aBW7HgaoFNbrw_wwdtQgCw_qG-gMuXl';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const streams = [
-            { id: '67b78995-5e6f-45b9-9150-1011c3a64731', user: 'RubiusZ', title: 'MEMES Y REACCIONES 💀', viewers: '45.2k', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=rub' },
-            { id: '9076f770-5b23-448c-b03a-3c4078502f5e', user: 'AuronPlay', title: 'MINECRAFT EXTREMO!!', viewers: '110k', img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=aur' },
-            { id: '67b78995-5e6f-45b9-9150-1011c3a64731', user: 'TheGrefg', title: 'PRESENTANDO SKIN', viewers: '80k', img: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=grefg' },
-            { id: '9076f770-5b23-448c-b03a-3c4078502f5e', user: 'IlloJuan', title: 'JOYITAS PS2', viewers: '35k', img: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=illo' }
-        ];
-
         let isLoginMode = true;
 
-        // AUTH & PROFILE
+        // AUTH FUNCTIONS
         function openAuth() { document.getElementById('auth-modal').classList.add('active'); }
         function closeAuth() { document.getElementById('auth-modal').classList.remove('active'); }
         function toggleAuthMode() {
@@ -236,16 +163,28 @@
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             const btn = document.getElementById('auth-btn');
+            
+            if (!email || !password) return alert("Completa los campos");
             btn.innerText = "PROCESANDO...";
 
-            if (isLoginMode) {
-                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) alert(error.message); else { closeAuth(); checkUser(); }
-            } else {
-                const { error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) alert(error.message); else alert("Confirma tu email.");
+            try {
+                if (isLoginMode) {
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    closeAuth();
+                    await checkUser();
+                } else {
+                    const { error } = await supabaseClient.auth.signUp({ email, password });
+                    if (error) throw error;
+                    alert("¡Registro exitoso! Ya puedes entrar.");
+                    isLoginMode = true;
+                    toggleAuthMode();
+                }
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                btn.innerText = isLoginMode ? "Entrar" : "Registrarse";
             }
-            btn.innerText = isLoginMode ? "Entrar" : "Registrarse";
         }
 
         async function checkUser() {
@@ -259,89 +198,22 @@
                     inDiv.classList.remove('hidden');
                     outDiv.classList.add('hidden');
                     document.getElementById('user-stream-key').innerText = profile.stream_key;
-                    document.getElementById('header-avatar').src = `https://i.pravatar.cc/100?u=${user.id}`;
-                    document.getElementById('edit-title').value = profile.bio || "";
+                    document.getElementById('header-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`;
                     document.getElementById('profile-header').innerHTML = `
-                        <img src="https://i.pravatar.cc/150?u=${user.id}" class="w-24 h-24 rounded-[30px] mx-auto mb-4 border-2 border-purple-500 shadow-xl">
-                        <h2 class="text-2xl font-black italic uppercase tracking-tighter">${profile.username}</h2>
-                        <p class="text-gray-500 text-[10px] font-bold mt-1">ID: ${user.id.substring(0,8)}</p>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}" class="w-24 h-24 rounded-[30px] mx-auto mb-4 border-2 border-purple-500 shadow-xl">
+                        <h2 class="text-2xl font-black italic uppercase">${profile.username}</h2>
                     `;
                 }
-            } else {
-                inDiv.classList.add('hidden');
-                outDiv.classList.remove('hidden');
             }
-        }
-
-        async function updateStreamSettings() {
-            const newTitle = document.getElementById('edit-title').value;
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const { error } = await supabaseClient.from('profiles').update({ bio: newTitle }).eq('id', user.id);
-            if (error) alert("Error"); else alert("¡Título guardado!");
         }
 
         async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
 
-        // NAVIGATION & REALTIME CHAT
+        // NAVIGATION
         function showView(viewId) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             if(viewId !== 'stream') document.getElementById('peertube-player').src = "";
-        }
-
-        // Suscripción Realtime para el Chat
-        supabaseClient
-            .channel('public:messages')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-                const chatBox = document.getElementById('pro-chat');
-                const p = document.createElement('p');
-                p.innerHTML = `<span class="text-purple-400 font-black italic mr-2">${payload.new.username.toUpperCase()}:</span> <span class="text-white/80">${payload.new.content}</span>`;
-                chatBox.appendChild(p);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            })
-            .subscribe();
-
-        async function handleChat(e) {
-            if(e.key === 'Enter') {
-                const input = document.getElementById('chat-input');
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (!user) return alert("Inicia sesión para chatear");
-                
-                await supabaseClient.from('messages').insert([
-                    { content: input.value, user_id: user.id, username: user.email.split('@')[0] }
-                ]);
-                input.value = "";
-            }
-        }
-
-        function init() {
-            const grid = document.getElementById('streams-grid');
-            const sidebar = document.getElementById('sidebar-streams');
-            streams.forEach(s => {
-                grid.innerHTML += `
-                    <div class="group cursor-pointer" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
-                        <div class="relative aspect-video rounded-3xl overflow-hidden mb-4 border border-white/5">
-                            <img src="${s.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                        </div>
-                        <div class="flex space-x-3">
-                            <img src="${s.avatar}" class="w-10 h-10 rounded-full border border-white/10">
-                            <div class="overflow-hidden">
-                                <h4 class="text-sm font-black italic truncate">${s.title}</h4>
-                                <p class="text-[10px] text-gray-500 font-bold uppercase">${s.user}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                sidebar.innerHTML += `
-                    <div class="flex items-center justify-between cursor-pointer hover:bg-white/5 p-1 rounded-lg" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
-                        <div class="flex items-center space-x-3">
-                            <div class="relative"><img src="${s.avatar}" class="w-7 h-7 rounded-full"><div class="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-[#080808]"></div></div>
-                            <p class="text-[11px] font-bold truncate">${s.user}</p>
-                        </div>
-                        <span class="text-[9px] text-gray-500">${s.viewers}</span>
-                    </div>
-                `;
-            });
         }
 
         function openStream(user, title, img, avatar, pid) {
@@ -358,7 +230,41 @@
             alert("¡Clave copiada!");
         }
 
-        window.onload = () => { init(); checkUser(); };
+        // INIT
+        window.onload = () => {
+            const streams = [
+                { id: '67b78995-5e6f-45b9-9150-1011c3a64731', user: 'RubiusZ', title: 'MEMES Y REACCIONES 💀', viewers: '45.2k', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=rub' },
+                { id: '9076f770-5b23-448c-b03a-3c4078502f5e', user: 'AuronPlay', title: 'MINECRAFT EXTREMO!!', viewers: '110k', img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800', avatar: 'https://i.pravatar.cc/150?u=aur' }
+            ];
+            
+            const grid = document.getElementById('streams-grid');
+            const sidebar = document.getElementById('sidebar-streams');
+            
+            streams.forEach(s => {
+                grid.innerHTML += `
+                    <div class="group cursor-pointer" onclick="openStream('${s.user}', '${s.title}', '${s.img}', '${s.avatar}', '${s.id}')">
+                        <div class="relative aspect-video rounded-3xl overflow-hidden mb-4 border border-white/5">
+                            <img src="${s.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="flex space-x-3">
+                            <img src="${s.avatar}" class="w-10 h-10 rounded-full">
+                            <div>
+                                <h4 class="text-sm font-black italic truncate">${s.title}</h4>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase">${s.user}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                sidebar.innerHTML += `
+                    <div class="flex items-center justify-between cursor-pointer hover:bg-white/5 p-1 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <img src="${s.avatar}" class="w-7 h-7 rounded-full">
+                            <p class="text-[11px] font-bold">${s.user}</p>
+                        </div>
+                        <span class="text-[9px] text-red-500 font-bold">LIVE</span>
+                    </div>`;
+            });
+            checkUser();
+        };
     </script>
 </body>
 </html>
